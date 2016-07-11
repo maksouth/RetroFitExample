@@ -13,8 +13,8 @@ import retrofit.http.Query;
  */
 public interface RestInterface {
 
-    @GET("/forecast/daily?appid=6b5c68919bb64aa5793f14196102c0e1&cnt=10&units=metric")
-    void getWheatherReport(@Query("q") String q, Callback<Example> cb);
+    @GET("/forecast/daily?appid=6b5c68919bb64aa5793f14196102c0e1&units=metric")
+    void getWheatherReport(@Query("q") String q, @Query("cnt") int d, Callback<Example> cb);
 
 
 

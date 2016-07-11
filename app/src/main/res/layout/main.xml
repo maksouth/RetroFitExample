@@ -12,10 +12,10 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="190dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/current_ll">
+        android:id="@+id/current_ll"
+        android:layout_below="@+id/linearLayout2"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true">
 
         <ImageView
             android:layout_width="90dp"
@@ -207,6 +207,35 @@
             android:layout_height="match_parent"
             android:layout_width="match_parent"
             android:clipToPadding="false"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/linearLayout2">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/city_name_et"
+            android:layout_weight="1" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:inputType="numberDecimal"
+            android:ems="10"
+            android:id="@+id/days_forecast_et"
+            android:layout_weight="1" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="OK!"
+            android:id="@+id/accept_input_button" />
     </LinearLayout>
 
 </RelativeLayout>
