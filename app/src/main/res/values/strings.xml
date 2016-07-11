@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">RetroFitExample</string>
+    <string name="morning_temperature_label">morn</string>
+    <string name="night_temperature_label">night</string>
+    <string name="day_temperature_label">day</string>
+    <string name="evening_temperature_label">eve</string>
+    <string name="temperature_measurement"> C</string>
+    <string name="wind">wind speed</string>
+    <string name="pressure">pressure</string>
+    <string name="description">description</string>
+
+</resources>
