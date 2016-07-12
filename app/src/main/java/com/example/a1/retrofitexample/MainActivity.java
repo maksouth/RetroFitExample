@@ -1,5 +1,6 @@
 package com.example.a1.retrofitexample;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,9 +36,9 @@ public class MainActivity extends AppCompatActivity {
     public static final int MAX_DAYS_FORECAST = 16;
     public static final String EMPTY_STRING="";
 
-
     static boolean isConnectedToWeatherAPI = false;
 
+    ProgressDialog serverConnectDialog;
     RecyclerView recycler;
     LinearLayoutManager verticalManager;
     TextView currentPressureTV;
@@ -148,6 +149,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void makeApiCall(String cityNameParameter, int daysForecastParameter){
+
+        serverConnectDialog = new ProgressDialog(MainActivity.this);
+        serverConnectDialog.setTitle("Please wait...");
+        serverConnectDialog.show();
+
         //making object of RestAdapter
         RestAdapter adapter = new RestAdapter.Builder().setEndpoint(URL).build();
 
@@ -179,6 +185,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        serverConnectDialog.dismiss();
     }
 
 }
