@@ -20,12 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.Callback;
-import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String URL = "http://api.openweathermap.org/data/2.5";
     public static final int CURRENT_WEATHER_ELEMENT = 0;
     public static final int NEXT_DAY_FORECAST_ELEMENT = 1;
     public static final int ZERO_WEATHER_INDEX = 0;
@@ -110,6 +108,9 @@ public class MainActivity extends AppCompatActivity {
         verticalManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recycler.setLayoutManager(verticalManager);
 
+        serverConnectDialog = new ProgressDialog(MainActivity.this);
+        serverConnectDialog.setTitle("Please wait...");
+
         currentDayTempTV = (TextView)findViewById(R.id.day_temp_tv);
         currentNightTempTV = (TextView)findViewById(R.id.night_temp_tv);
         currentEveTempTV = (TextView)findViewById(R.id.eve_temp_tv);
@@ -150,16 +151,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void makeApiCall(String cityNameParameter, int daysForecastParameter){
 
-        serverConnectDialog = new ProgressDialog(MainActivity.this);
-        serverConnectDialog.setTitle("Please wait...");
         serverConnectDialog.show();
 
-        //making object of RestAdapter
-        RestAdapter adapter = new RestAdapter.Builder().setEndpoint(URL).build();
-
-        //Creating Rest Services
-        RestInterface restInterface = adapter.create(RestInterface.class);
-
+        RestInterface restInterface = ApiFactory.getWeatherService();
         //Calling method to get whether report
         restInterface.getWheatherReport(cityNameParameter, daysForecastParameter,  new Callback<Example>() {
 
