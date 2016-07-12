@@ -1,4 +1,4 @@
-package com.example.a1.retrofitexample.POJO3;
+package com.example.a1.retrofitexample.retrofit_pojo_model;
 
 /**
  * Created by 1 on 7/11/2016.

@@ -1,4 +1,4 @@
-package com.example.a1.retrofitexample;
+package com.example.a1.retrofitexample.recycler_utility;
 
 /**
  * Created by 1 on 7/10/2016.
@@ -8,6 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.a1.retrofitexample.DailyWeatherState;
+import com.example.a1.retrofitexample.R;
+import com.example.a1.retrofitexample.city_weather_model.CityWeatherState;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,9 +19,9 @@ import java.util.List;
  * Created by 1 on 7/7/2016.
  */
 public class WeatherRecyclerAdapter extends RecyclerView.Adapter<WeatherRecyclerHolder> {
-    private List<DailyWeatherState> states = new ArrayList<>();
+    private List<CityWeatherState> states = new ArrayList<>();
 
-    public WeatherRecyclerAdapter(List<DailyWeatherState> states) {
+    public WeatherRecyclerAdapter(List<CityWeatherState> states) {
         setState(states);
     }
 
@@ -40,12 +44,12 @@ public class WeatherRecyclerAdapter extends RecyclerView.Adapter<WeatherRecycler
         return states.size();
     }
 
-    public void setState(List<DailyWeatherState> states) {
+    public void setState(List<CityWeatherState> states) {
         this.states = states;
         notifyItemRangeInserted(0, this.states.size());
     }
 
-    public void addItem(DailyWeatherState element){
+    public void addItem(CityWeatherState element){
         states.add(element);
         notifyItemRangeInserted(getItemCount(), this.states.size());
     }

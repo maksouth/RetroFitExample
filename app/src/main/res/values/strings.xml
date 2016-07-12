@@ -8,5 +8,7 @@
     <string name="wind">wind speed</string>
     <string name="pressure">pressure</string>
     <string name="description">description</string>
+    <string name="wind_land">wind</string>
+    <string name="pressure_land">press</string>
 
 </resources>

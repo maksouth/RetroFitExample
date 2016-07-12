@@ -1,4 +1,4 @@
-package com.example.a1.retrofitexample;
+package com.example.a1.retrofitexample.retrofit_api;
 
 import com.squareup.okhttp.OkHttpClient;
 

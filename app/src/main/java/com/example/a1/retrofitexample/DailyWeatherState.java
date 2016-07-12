@@ -5,10 +5,10 @@ import java.util.Date;
 /**
  * Created by 1 on 7/11/2016.
  */
-public class DailyWeatherState {
+public class DailyWeatherState{
     public static final int THOUSAND = 1000;
 
-    private Date date;
+    private long date;
     private double temperature;
     private double pressure;
     private double windSpeed;
@@ -16,7 +16,7 @@ public class DailyWeatherState {
     private int iconId;
 
     public DailyWeatherState(long dateInSeconds, double temperature, double pressure, double windSpeed, String description, int iconId) {
-        this.date = new Date(dateInSeconds*THOUSAND);
+        this.date = dateInSeconds*THOUSAND;
         this.temperature = temperature;
         this.pressure = pressure;
         this.windSpeed = windSpeed;
@@ -28,7 +28,7 @@ public class DailyWeatherState {
         return iconId;
     }
 
-    public Date getDate() {
+    public long getDate() {
         return date;
     }
 
@@ -46,5 +46,9 @@ public class DailyWeatherState {
 
     public String getDescription() {
         return description;
+    }
+
+    public Date getDateAsObject(){
+        return new Date(date);
     }
 }

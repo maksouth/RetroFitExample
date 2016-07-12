@@ -1,11 +1,12 @@
-package com.example.a1.retrofitexample.POJO3;
+package com.example.a1.retrofitexample.retrofit_pojo_model;
 
 /**
  * Created by 1 on 7/11/2016.
  */
-import java.util.ArrayList;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
 
 public class List {
 

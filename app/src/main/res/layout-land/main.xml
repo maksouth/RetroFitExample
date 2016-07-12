@@ -16,7 +16,8 @@
         android:id="@+id/current_ll"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:nestedScrollingEnabled="true">
 
         <ImageView
             android:layout_width="90dp"
@@ -42,7 +43,9 @@
             android:id="@+id/tableLayout"
             android:layout_below="@+id/gridLayout"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
+            android:layout_alignParentStart="false"
+            android:layout_alignParentBottom="true"
+            android:minHeight="50dp">
 
             <TableRow
                 android:layout_width="match_parent"
@@ -133,25 +136,16 @@
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/current_weather_icon"
-            android:id="@+id/gridLayout">
+            android:id="@+id/gridLayout"
+            android:layout_alignBottom="@+id/current_weather_icon"
+            android:layout_toRightOf="@+id/current_weather_icon"
+            android:layout_toEndOf="@+id/current_weather_icon">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/description"
-                android:id="@+id/textView5"
-                android:layout_row="0"
-                android:layout_column="0" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/wind"
+                android:text="@string/wind_land"
                 android:id="@+id/textView6"
                 android:layout_row="1"
                 android:layout_column="0" />
@@ -169,19 +163,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/pressure"
+                android:text="@string/pressure_land"
                 android:id="@+id/textView7"
                 android:layout_row="2"
                 android:layout_column="0" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text=""
                 android:id="@+id/current_description_tv"
                 android:layout_row="0"
-                android:layout_column="1" />
+                android:layout_column="0"
+                android:layout_columnSpan="2" />
 
             <TextView
                 android:layout_width="wrap_content"

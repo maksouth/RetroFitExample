@@ -14,11 +14,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.a1.retrofitexample.POJO3.Example;
+import com.example.a1.retrofitexample.city_weather_model.CityWeather;
+import com.example.a1.retrofitexample.city_weather_model.CityWeatherState;
+import com.example.a1.retrofitexample.city_weather_model.Temperature;
+import com.example.a1.retrofitexample.recycler_utility.WeatherRecyclerAdapter;
+import com.example.a1.retrofitexample.retrofit_api.ApiFactory;
+import com.example.a1.retrofitexample.retrofit_api.RestInterface;
+import com.example.a1.retrofitexample.retrofit_pojo_model.Example;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 
@@ -53,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     EditText daysForecastET;
     Button acceptInputButton;
 
-    static Example dataModel;
+    static CityWeather dataModel;
 
 
     @Override
@@ -72,34 +78,24 @@ public class MainActivity extends AppCompatActivity {
 
     public void fillUIFromResponse(){
 
-        com.example.a1.retrofitexample.POJO3.List element;
+        CityWeatherState element;
 
-        cityNameTv.setText(dataModel.getCity().getName());
+        cityNameTv.setText(dataModel.getCityName());
 
-        element = dataModel.getList().get(CURRENT_WEATHER_ELEMENT);
-        currentDescriptionTV.setText(element.getWeather().get(ZERO_WEATHER_INDEX).getDescription());
-        currentWindSpeedTV.setText(String.valueOf(element.getSpeed()));
+        element = dataModel.getWeatherStateList().get(CURRENT_WEATHER_ELEMENT);
+        currentDescriptionTV.setText(element.getDescription());
+        currentWindSpeedTV.setText(String.valueOf(element.getWindSpeed()));
         currentPressureTV.setText(String.valueOf(element.getPressure()));
-        currentNightTempTV.setText(String.valueOf(element.getTemp().getNight()));
-        currentMornTempTV.setText(String.valueOf(element.getTemp().getMorn()));
-        currentDayTempTV.setText(String.valueOf(element.getTemp().getDay()));
-        currentEveTempTV.setText(String.valueOf(element.getTemp().getEve()));
-        currentWeatherIconIV.setImageResource(IconFactory.getIconId(element.getWeather().get(0).getIcon()));
+        currentNightTempTV.setText(String.valueOf(element.getTemperature().getNight()));
+        currentMornTempTV.setText(String.valueOf(element.getTemperature().getMorn()));
+        currentDayTempTV.setText(String.valueOf(element.getTemperature().getDay()));
+        currentEveTempTV.setText(String.valueOf(element.getTemperature().getEve()));
+        currentWeatherIconIV.setImageResource(element.getIconId());
 
-        List<DailyWeatherState> stateList = new ArrayList<>();
-        DailyWeatherState state;
-        for (int i = NEXT_DAY_FORECAST_ELEMENT; i < dataModel.getList().size(); i++) {
-            element = dataModel.getList().get(i);
-            state = new DailyWeatherState(element.getDt(),
-                    element.getTemp().getDay(),
-                    element.getPressure(),
-                    element.getSpeed(),
-                    element.getWeather().get(ZERO_WEATHER_INDEX).getDescription(),
-                    IconFactory.getIconId(element.getWeather().get(ZERO_WEATHER_INDEX).getIcon()));
-            stateList.add(state);
-        }
-
-        WeatherRecyclerAdapter recyclerAdapter = new WeatherRecyclerAdapter(stateList);
+        WeatherRecyclerAdapter recyclerAdapter = new WeatherRecyclerAdapter(dataModel
+                                                        .getWeatherStateList()
+                                                        .subList(NEXT_DAY_FORECAST_ELEMENT,
+                                                                dataModel.getWeatherStateList().size()));
         recycler.setAdapter(recyclerAdapter);
     }
 
@@ -162,7 +158,28 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("SUCCESS", model.toString());
                 Log.e("SUCCESS", String.valueOf(response.getStatus()));
                 if(response.getStatus()>=200 && response.getStatus()<300) {
-                    dataModel = model;
+                    dataModel = DataModelAdapter.convertToCityWeather(model);;
+
+                    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(MainActivity.this)
+                                                                                    .deleteRealmIfMigrationNeeded().build();
+                    Realm.setDefaultConfiguration(realmConfiguration);
+                    Realm realm = Realm.getDefaultInstance();
+
+                    realm.beginTransaction();
+
+                    for(CityWeatherState state: dataModel.getWeatherStateList()){
+                        Temperature rTemp = realm.copyToRealm(state.getTemperature());
+                        state.setTemperature(rTemp);
+                        realm.copyToRealmOrUpdate(state);
+                    }
+                    realm.commitTransaction();
+
+
+                    int count = (int) realm.where(CityWeatherState.class).count();
+                    RealmResults<CityWeatherState> t = realm.where(CityWeatherState.class).findAll();
+
+                    Log.e("REALM", "Read: number " + count + " body " + t.toString());
+
                     fillUIFromResponse();
                 }else{
                     Toast.makeText(MainActivity.this, "Error with server", Toast.LENGTH_LONG).show();
@@ -177,6 +194,8 @@ public class MainActivity extends AppCompatActivity {
                 }else {
                     Toast.makeText(MainActivity.this, "Error with getting connection. Check your connection.", Toast.LENGTH_LONG).show();
                 }
+
+                error.printStackTrace();
             }
         });
 

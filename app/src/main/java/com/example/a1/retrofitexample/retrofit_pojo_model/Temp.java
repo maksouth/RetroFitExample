@@ -1,4 +1,4 @@
-package com.example.a1.retrofitexample.POJO3;
+package com.example.a1.retrofitexample.retrofit_pojo_model;
 
 /**
  * Created by 1 on 7/11/2016.
@@ -6,7 +6,7 @@ package com.example.a1.retrofitexample.POJO3;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Temp {
+public class Temp{
 
     @SerializedName("day")
     @Expose
@@ -26,6 +26,10 @@ public class Temp {
     @SerializedName("morn")
     @Expose
     private Double morn;
+
+
+    public Temp() {
+    }
 
     /**
      *

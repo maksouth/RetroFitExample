@@ -1,8 +1,8 @@
-package com.example.a1.retrofitexample;
+package com.example.a1.retrofitexample.retrofit_api;
 
 
 
-import com.example.a1.retrofitexample.POJO3.Example;
+import com.example.a1.retrofitexample.retrofit_pojo_model.Example;
 
 import retrofit.Callback;
 import retrofit.http.GET;
