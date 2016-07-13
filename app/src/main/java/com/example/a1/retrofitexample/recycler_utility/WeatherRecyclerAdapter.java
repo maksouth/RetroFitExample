@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.a1.retrofitexample.DailyWeatherState;
 import com.example.a1.retrofitexample.R;
 import com.example.a1.retrofitexample.city_weather_model.CityWeatherState;
 

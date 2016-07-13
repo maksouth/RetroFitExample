@@ -1,4 +1,6 @@
-package com.example.a1.retrofitexample;
+package com.example.a1.retrofitexample.utility;
+
+import com.example.a1.retrofitexample.R;
 
 import java.util.HashMap;
 import java.util.Map;

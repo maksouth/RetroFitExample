@@ -21,10 +21,11 @@ import com.example.a1.retrofitexample.recycler_utility.WeatherRecyclerAdapter;
 import com.example.a1.retrofitexample.retrofit_api.ApiFactory;
 import com.example.a1.retrofitexample.retrofit_api.RestInterface;
 import com.example.a1.retrofitexample.retrofit_pojo_model.Example;
+import com.example.a1.retrofitexample.utility.DataModelAdapter;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import io.realm.RealmResults;
+import io.realm.RealmList;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 
@@ -32,8 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int CURRENT_WEATHER_ELEMENT = 0;
     public static final int NEXT_DAY_FORECAST_ELEMENT = 1;
-    public static final int ZERO_WEATHER_INDEX = 0;
-    public static final String DEFAULT_CITY_NAME = "Zhytomyr,UA";
+    public static final String DEFAULT_CITY_NAME = "Zhytomyr";
     public static final int DEFAULT_DAYS_FORECAST = 10;
     public static final String ERROR_NO_FOUND_CITY = "Error: Not found city";
     public static final int MIN_DAYS_FORECAST = 1;
@@ -59,8 +59,12 @@ public class MainActivity extends AppCompatActivity {
     EditText daysForecastET;
     Button acceptInputButton;
 
-    static CityWeather dataModel;
+    Realm realm;
+    static String city;
 
+    static{
+        city = DEFAULT_CITY_NAME.toLowerCase();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,15 +72,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main);
 
         initializeUIElements();
+        connectToDB();
+        //removeOldRecordsFromDB(cityName);
 
 
-        if(!isConnectedToWeatherAPI) {
-            makeApiCall(DEFAULT_CITY_NAME, DEFAULT_DAYS_FORECAST);
-            isConnectedToWeatherAPI = true;
-        }else{fillUIFromResponse();}
+        loadData(city, DEFAULT_DAYS_FORECAST);
+
     }
 
-    public void fillUIFromResponse(){
+    public void fillUIFromResponse(CityWeather dataModel){
+
+        Log.e("FILL UI", dataModel.getCityName());
 
         CityWeatherState element;
 
@@ -123,13 +129,22 @@ public class MainActivity extends AppCompatActivity {
         acceptInputButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Integer daysForecast;
                 if( !( isEmpty(cityNameET.getText()) || isEmpty(daysForecastET.getText() ) ) ){
-                    Integer daysForecast = Integer.valueOf(String.valueOf(daysForecastET.getText()));
+                    try {
+                        daysForecast = Integer.valueOf(String.valueOf(daysForecastET.getText()));
+                    }catch(Exception ex){
+                        ex.printStackTrace();
+                        daysForecast = 5;
+                        Toast.makeText(MainActivity.this, "Number is too large. Default = 5", Toast.LENGTH_LONG).show();
+                    }
+
                     if(!isForecastDiapason(daysForecast)){
                         Toast.makeText(MainActivity.this, "Input forecast days between 1 and 16", Toast.LENGTH_LONG).show();
                     }else {
-                        makeApiCall(String.valueOf(cityNameET.getText()), daysForecast);
+                        loadData(String.valueOf(cityNameET.getText()), daysForecast);
                     }
+
                 }else{
                     Toast.makeText(MainActivity.this, "Input correct city name or forecast days", Toast.LENGTH_LONG).show();
                 }
@@ -158,29 +173,11 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("SUCCESS", model.toString());
                 Log.e("SUCCESS", String.valueOf(response.getStatus()));
                 if(response.getStatus()>=200 && response.getStatus()<300) {
-                    dataModel = DataModelAdapter.convertToCityWeather(model);;
+                    CityWeather dataModel = DataModelAdapter.convertToCityWeather(model);;
+                    city = dataModel.getCityName();
 
-                    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(MainActivity.this)
-                                                                                    .deleteRealmIfMigrationNeeded().build();
-                    Realm.setDefaultConfiguration(realmConfiguration);
-                    Realm realm = Realm.getDefaultInstance();
-
-                    realm.beginTransaction();
-
-                    for(CityWeatherState state: dataModel.getWeatherStateList()){
-                        Temperature rTemp = realm.copyToRealm(state.getTemperature());
-                        state.setTemperature(rTemp);
-                        realm.copyToRealmOrUpdate(state);
-                    }
-                    realm.commitTransaction();
-
-
-                    int count = (int) realm.where(CityWeatherState.class).count();
-                    RealmResults<CityWeatherState> t = realm.where(CityWeatherState.class).findAll();
-
-                    Log.e("REALM", "Read: number " + count + " body " + t.toString());
-
-                    fillUIFromResponse();
+                    writeCityWeatherToDB(dataModel);
+                    fillUIFromResponse(dataModel);
                 }else{
                     Toast.makeText(MainActivity.this, "Error with server", Toast.LENGTH_LONG).show();
                 }
@@ -190,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
             public void failure(RetrofitError error) {
                 Log.e("FATAL", error.getMessage() + " " + error.getKind());
                 if(error.getMessage().contains(ERROR_NO_FOUND_CITY)){
-                    Toast.makeText(MainActivity.this, "No city found", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "No city founds", Toast.LENGTH_LONG).show();
                 }else {
                     Toast.makeText(MainActivity.this, "Error with getting connection. Check your connection.", Toast.LENGTH_LONG).show();
                 }
@@ -200,6 +197,56 @@ public class MainActivity extends AppCompatActivity {
         });
 
         serverConnectDialog.dismiss();
+    }
+
+    public void connectToDB(){
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(MainActivity.this)
+                .deleteRealmIfMigrationNeeded().build();
+        Realm.setDefaultConfiguration(realmConfiguration);
+        realm = Realm.getDefaultInstance();
+    }
+
+    public void writeCityWeatherToDB(CityWeather dataModel){
+
+        realm.beginTransaction();
+
+        RealmList<CityWeatherState> states = new RealmList<>();
+        for(CityWeatherState state: dataModel.getWeatherStateList()){
+            Temperature rTemp = realm.copyToRealm(state.getTemperature());
+            state.setTemperature(rTemp);
+            states.add(realm.copyToRealmOrUpdate(state));
+        }
+        dataModel.setWeatherStateList(states);
+        realm.copyToRealmOrUpdate(dataModel);
+        realm.commitTransaction();
+    }
+
+    public CityWeather readCityWeatherFromDB(String cityName){
+        Log.e("READ DB", cityName);
+        CityWeather cityWeather = realm.where(CityWeather.class).equalTo("cityName", cityName).findFirst();
+        //Log.e("REALM", cityWeather.toString());
+        return cityWeather;
+    }
+
+    public void loadData(String cityName, int daysForecast){
+        cityName = cityName.toLowerCase();
+
+        CityWeather weather = readCityWeatherFromDB(cityName);
+        if(weather!=null){
+            fillUIFromResponse(weather);
+        }
+
+        if(!isConnectedToWeatherAPI || !city.equals(cityName)) {
+            city = cityName;
+            Log.e("LOAD", cityName);
+            makeApiCall(cityName, daysForecast);
+            isConnectedToWeatherAPI = true;
+        }else{
+            city = cityName;
+        }
+        Log.e("LOAD", "after api call");
+
+
     }
 
 }

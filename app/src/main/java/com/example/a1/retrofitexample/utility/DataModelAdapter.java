@@ -1,4 +1,4 @@
-package com.example.a1.retrofitexample;
+package com.example.a1.retrofitexample.utility;
 
 import com.example.a1.retrofitexample.city_weather_model.CityWeather;
 import com.example.a1.retrofitexample.city_weather_model.CityWeatherState;
@@ -13,7 +13,7 @@ import io.realm.RealmList;
  * Created by 1 on 7/12/2016.
  */
 public class DataModelAdapter {
-    static CityWeather convertToCityWeather(Example example){
+    public static CityWeather convertToCityWeather(Example example){
         CityWeather cityWeather = new CityWeather();
         RealmList<CityWeatherState> weatherStateList = new RealmList<>();
 

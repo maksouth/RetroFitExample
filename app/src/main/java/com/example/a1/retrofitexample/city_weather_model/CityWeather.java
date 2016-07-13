@@ -1,7 +1,5 @@
 package com.example.a1.retrofitexample.city_weather_model;
 
-import java.util.List;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -22,10 +20,10 @@ public class CityWeather extends RealmObject{
     }
 
     public void setCityName(String cityName) {
-        this.cityName = cityName;
+        this.cityName = cityName.toLowerCase();
     }
 
-    public List<CityWeatherState> getWeatherStateList() {
+    public RealmList<CityWeatherState> getWeatherStateList() {
         return weatherStateList;
     }
 
