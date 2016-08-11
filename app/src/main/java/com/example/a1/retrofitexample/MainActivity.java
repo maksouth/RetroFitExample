@@ -80,6 +80,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * fill UI components for displaying weather information from dataModel
+     * @param dataModel
+     */
     public void fillUIFromResponse(CityWeather dataModel){
 
         Log.e("FILL UI", dataModel.getCityName());
@@ -105,6 +109,9 @@ public class MainActivity extends AppCompatActivity {
         recycler.setAdapter(recyclerAdapter);
     }
 
+    /**
+     * Initialize all UI elements, add listeners to buttons and describe their logic
+     */
     public void initializeUIElements(){
         recycler = (RecyclerView)findViewById(R.id.recycler);
         verticalManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -152,10 +159,20 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Check whether string is empty (containing "" value)
+     * @param sequence
+     * @return
+     */
     public boolean isEmpty(Editable sequence){
         return String.valueOf(sequence).equals(EMPTY_STRING);
     }
 
+    /**
+     * Check whether @param (days) is in correct day range to forecast (1-16)
+     * @param days
+     * @return
+     */
     public boolean isForecastDiapason(int days){
         return (days>=MIN_DAYS_FORECAST && days<=MAX_DAYS_FORECAST);
     }
@@ -199,6 +216,9 @@ public class MainActivity extends AppCompatActivity {
         serverConnectDialog.dismiss();
     }
 
+    /**
+     * set settings
+     */
     public void connectToDB(){
         RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(MainActivity.this)
                 .deleteRealmIfMigrationNeeded().build();
@@ -206,6 +226,10 @@ public class MainActivity extends AppCompatActivity {
         realm = Realm.getDefaultInstance();
     }
 
+    /**
+     * wrtite CityWeather object to DB, use cityName as primary key
+     * @param dataModel
+     */
     public void writeCityWeatherToDB(CityWeather dataModel){
 
         realm.beginTransaction();
@@ -221,6 +245,11 @@ public class MainActivity extends AppCompatActivity {
         realm.commitTransaction();
     }
 
+    /**
+     * read CityWeather object from DB
+     * @param cityName
+     * @return
+     */
     public CityWeather readCityWeatherFromDB(String cityName){
         Log.e("READ DB", cityName);
         CityWeather cityWeather = realm.where(CityWeather.class).equalTo("cityName", cityName).findFirst();
@@ -228,6 +257,14 @@ public class MainActivity extends AppCompatActivity {
         return cityWeather;
     }
 
+    /**
+     * firstly get data from DB (readCityWeatherFromDB) and put this data to UI
+     * load data from server(makeApiCall), write it to database (writeCityWeatherToDB) and
+     * put this data to UI(fiiUIFromResponse). If server isn't available, or there is no connection
+     * makes an attempt to get data from db
+     * @param cityName - city to get forecast of
+     * @param daysForecast - number of frecasting days
+     */
     public void loadData(String cityName, int daysForecast){
         cityName = cityName.toLowerCase();
 
@@ -245,8 +282,6 @@ public class MainActivity extends AppCompatActivity {
             city = cityName;
         }
         Log.e("LOAD", "after api call");
-
-
     }
 
 }
